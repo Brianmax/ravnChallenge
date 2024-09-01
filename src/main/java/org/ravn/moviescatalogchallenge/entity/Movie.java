@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,4 +19,12 @@ public class Movie {
     private String name;
     private Date releaseDate;
     private String synopsis;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "movie_categories",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Categorie> categories;
 }

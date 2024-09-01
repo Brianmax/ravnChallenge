@@ -16,4 +16,8 @@ public class User {
     private Long userId;
     private String email;
     private String password;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "role_id")
+    private Role role;
 }
