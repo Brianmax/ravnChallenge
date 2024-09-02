@@ -13,5 +13,5 @@ public class MovieRequest {
     protected Date releaseDate;
     protected String synopsis;
     protected List<String> categories;
-    protected int userId;
+    private int userId;
 }
