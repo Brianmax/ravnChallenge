@@ -13,9 +13,8 @@ import org.ravn.moviescatalogchallenge.entity.User;
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    @Mapping(target = "userId", source = "0")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "password", target = "password")
+    @Mapping(source = "userRequest.email", target = "email")
+    @Mapping(source = "userRequest.password", target = "password")
     @Mapping(source = "role", target = "role")
     User userRequestToUser(UserRequest userRequest, Role role);
 
@@ -23,9 +22,9 @@ public interface UserMapper {
     @Mapping(source = "role.role", target = "role")
     UserResponse userToUserResponse(User user);
 
-    @Mapping(source = "password", target = "password")
+    @Mapping(source = "userRequestUpdate.password", target = "password")
     @Mapping(source = "role", target = "role")
-    @Mapping(source = "email", target = "email")
+    @Mapping(source = "user.email", target = "email")
     @Mapping(source = "user.userId", target = "userId")
     User userRequestUpdateToUser(UserRequestUpdate userRequestUpdate, Role role, User user);
 }
