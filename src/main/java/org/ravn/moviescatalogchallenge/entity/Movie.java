@@ -20,6 +20,10 @@ public class Movie {
     private Date releaseDate;
     private String synopsis;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "usuario_id")
+    private User user;
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "movie_categories",
