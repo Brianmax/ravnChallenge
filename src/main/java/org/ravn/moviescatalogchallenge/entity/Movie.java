@@ -24,7 +24,7 @@ public class Movie {
     @JoinColumn(name = "usuario_id")
     private User user;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "movie_categories",
             joinColumns = @JoinColumn(name = "movie_id"),

@@ -9,8 +9,9 @@ import java.util.List;
 @Getter
 @Setter
 public class MovieRequest {
-    private String name;
-    private Date releaseDate;
-    private String synopsis;
-    private List<String> categories;
+    protected String name;
+    protected Date releaseDate;
+    protected String synopsis;
+    protected List<String> categories;
+    protected int userId;
 }
