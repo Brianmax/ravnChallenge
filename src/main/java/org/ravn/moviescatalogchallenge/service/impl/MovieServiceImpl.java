@@ -1,6 +1,7 @@
 package org.ravn.moviescatalogchallenge.service.impl;
 
 import com.sun.source.tree.OpensTree;
+import java.util.Collections;
 import org.ravn.moviescatalogchallenge.aggregate.request.MovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.entity.Categorie;
@@ -9,10 +10,13 @@ import org.ravn.moviescatalogchallenge.mapper.MovieMapper;
 import org.ravn.moviescatalogchallenge.repository.CategoriesRepository;
 import org.ravn.moviescatalogchallenge.repository.MovieRepository;
 import org.ravn.moviescatalogchallenge.service.MovieService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -34,5 +38,22 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = MovieMapper.INSTANCE.movieRequestToMovie(movieRequest, categories);
         movieRepository.save(movie);
         return MovieMapper.INSTANCE.movieToMovieResponse(movie, movieRequest.getCategories());
+    }
+
+    @Override
+    public List<MovieResponse> getAllMovies(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Movie> movies = movieRepository.findAll(pageable).getContent();
+
+        if(movies.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return movies.stream()
+                .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(movie, getCategoriesNames(movie)))
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getCategoriesNames(Movie movie) {
+        return movie.getCategories().stream().map(Categorie::getName).collect(Collectors.toList());
     }
 }
