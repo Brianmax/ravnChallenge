@@ -5,6 +5,7 @@ import org.ravn.moviescatalogchallenge.aggregate.request.UserRequestUpdate;
 import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {

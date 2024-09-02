@@ -65,6 +65,25 @@ public class MovieServiceImpl implements MovieService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<MovieResponse> getMoviesByCategory(String category, int page, int size) {
+        List<Movie> movies = movieRepository.findByCategoriesIn(category);
+        if(movies.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return movies.stream()
+                .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
+                        movie,
+                        getCategoriesNames(movie),
+                        UserMapper.INSTANCE.userToUserResponse(movie.getUser())))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MovieResponse> getMoviesByYear(int year, int page, int size) {
+        return List.of();
+    }
+
     private List<String> getCategoriesNames(Movie movie) {
         return movie.getCategories().stream().map(Categorie::getName).collect(Collectors.toList());
     }
