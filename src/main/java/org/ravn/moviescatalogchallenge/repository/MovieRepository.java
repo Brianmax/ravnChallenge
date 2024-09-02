@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
     Optional<Movie> findByName(String name);
     Optional<Movie> findBySynopsis(String synopsis);
-    @Query("SELECT m FROM Movie m WHERE m.categories IN :category")
+    @Query("SELECT m FROM Movie m WHERE :category IN m.categories")
     List<Movie> findByCategoriesIn(String category);
 }
