@@ -1,5 +1,6 @@
 package org.ravn.moviescatalogchallenge.controller;
 
+import org.ravn.moviescatalogchallenge.aggregate.request.LoginRequest;
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
@@ -20,8 +21,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/signup")
+    @PostMapping("auth/signup")
     public ResponseBase<UserResponse> saveUser(@RequestBody UserRequest userRequest) {
         return userService.createUser(userRequest);
+    }
+    @PostMapping("auth/login")
+    public ResponseBase<String> login(@RequestBody LoginRequest loginRequest) {
+        return userService.login(loginRequest);
     }
 }
