@@ -31,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         UserEntity userEntity = user.get();
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_".concat(user.get().getRole().getRole())));
+        authorities.add(new SimpleGrantedAuthority(user.get().getRole().getRole()));
         return new User(userEntity.getEmail(), user.get().getPassword(), authorities);
     }
 }
