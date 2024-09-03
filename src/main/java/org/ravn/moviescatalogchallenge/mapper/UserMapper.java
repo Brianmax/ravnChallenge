@@ -7,7 +7,9 @@ import org.ravn.moviescatalogchallenge.aggregate.request.UserRequest;
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequestUpdate;
 import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.entity.Role;
-import org.ravn.moviescatalogchallenge.entity.User;
+import org.ravn.moviescatalogchallenge.entity.UserEntity;
+
+import java.sql.Date;
 
 @Mapper
 public interface UserMapper {
@@ -16,15 +18,15 @@ public interface UserMapper {
     @Mapping(source = "userRequest.email", target = "email")
     @Mapping(source = "userRequest.password", target = "password")
     @Mapping(source = "role", target = "role")
-    User userRequestToUser(UserRequest userRequest, Role role);
+    UserEntity userRequestToUser(UserRequest userRequest, Role role);
 
     @Mapping(source = "email", target = "email")
     @Mapping(source = "role.role", target = "role")
-    UserResponse userToUserResponse(User user);
+    UserResponse userToUserResponse(UserEntity userEntity);
 
     @Mapping(source = "userRequestUpdate.password", target = "password")
     @Mapping(source = "role", target = "role")
-    @Mapping(source = "user.email", target = "email")
-    @Mapping(source = "user.userId", target = "userId")
-    User userRequestUpdateToUser(UserRequestUpdate userRequestUpdate, Role role, User user);
+    @Mapping(source = "userEntity.email", target = "email")
+    @Mapping(source = "userEntity.userId", target = "userId")
+    UserEntity userRequestUpdateToUser(UserRequestUpdate userRequestUpdate, Role role, UserEntity userEntity);
 }
