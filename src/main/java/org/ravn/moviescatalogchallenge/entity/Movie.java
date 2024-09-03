@@ -17,8 +17,14 @@ public class Movie {
     @Column(name = "movie_id")
     private Long movieId;
     private String name;
-    private Date releaseDate;
+    private int releaseYear;
     private String synopsis;
+    private Date createdAt;
+    private Date updatedAt;
+    private String updatedBy;
+    private boolean deleted;
+    private Date deletedAt;
+    private String deletedBy;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id")
@@ -30,5 +36,5 @@ public class Movie {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-    private List<Categorie> categories;
+    private List<Category> categories;
 }
