@@ -20,7 +20,6 @@ public class MovieController {
     @PostMapping("/save")
     public ResponseEntity<?> saveMovie(@RequestBody MovieRequest movieRequest) {
         MovieResponse movieResponse = movieService.createMovie(movieRequest);
-
         if (movieResponse == null) {
             return ResponseEntity.badRequest().body("Movie already exist or categories do not exist");
         }

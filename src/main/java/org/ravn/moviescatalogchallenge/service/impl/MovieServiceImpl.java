@@ -1,10 +1,8 @@
 package org.ravn.moviescatalogchallenge.service.impl;
 
-import com.sun.source.tree.OpensTree;
 import java.util.Collections;
 import org.ravn.moviescatalogchallenge.aggregate.request.MovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
-import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.entity.Categorie;
 import org.ravn.moviescatalogchallenge.entity.Movie;
 import org.ravn.moviescatalogchallenge.entity.User;
