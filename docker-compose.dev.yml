@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 services:
   postgres:
@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: movies_catalog_dev
     ports:
-      - 5432:5432
+      - "5432:5432"
 
   app:
     build:
