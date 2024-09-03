@@ -1,15 +1,23 @@
 package org.ravn.moviescatalogchallenge.service.impl;
 
+import org.ravn.moviescatalogchallenge.aggregate.request.LoginRequest;
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequest;
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequestUpdate;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.entity.Role;
-import org.ravn.moviescatalogchallenge.entity.User;
+import org.ravn.moviescatalogchallenge.entity.UserEntity;
 import org.ravn.moviescatalogchallenge.mapper.UserMapper;
 import org.ravn.moviescatalogchallenge.repository.RoleRepository;
 import org.ravn.moviescatalogchallenge.repository.UserRepository;
+import org.ravn.moviescatalogchallenge.security.UserDetailsServiceImpl;
+import org.ravn.moviescatalogchallenge.service.JwtService;
 import org.ravn.moviescatalogchallenge.service.UserService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,15 +28,21 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtService jwtService, UserDetailsServiceImpl userDetailsServiceImpl) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
     @Override
     public ResponseBase<UserResponse> createUser(UserRequest userRequest) {
-        Optional<User> userOptional = userRepository.findByEmail(userRequest.getEmail());
+        Optional<UserEntity> userOptional = userRepository.findByEmail(userRequest.getEmail());
         Optional<Role> roleOptional = roleRepository.findByRole(userRequest.getRole());
         List<String> errors = validateInput(userRequest);
         // if the user already exist, or the role does not exist. We do nothing
@@ -46,31 +60,57 @@ public class UserServiceImpl implements UserService {
                     Optional.empty());
         }
 
-        User user = UserMapper.INSTANCE.userRequestToUser(userRequest, roleOptional.get());
-        userRepository.save(user);
+        UserEntity userEntity = UserMapper.INSTANCE.userRequestToUser(userRequest, roleOptional.get());
+        userEntity.setPassword(new BCryptPasswordEncoder().encode(userRequest.getPassword()));
+        userRepository.save(userEntity);
         return new ResponseBase<>(
                 "User created",
                 200,
                 new ArrayList<>(),
-                Optional.of(UserMapper.INSTANCE.userToUserResponse(user)));
+                Optional.of(UserMapper.INSTANCE.userToUserResponse(userEntity)));
     }
 
     @Override
     public Optional<UserResponse> updateUser(UserRequestUpdate userRequestUpdate, int id) {
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<UserEntity> userOptional = userRepository.findById(id);
         Optional<Role> roleOptional = roleRepository.findByRole(userRequestUpdate.getRole());
 
         if (userOptional.isEmpty() || roleOptional.isEmpty()) {
             return Optional.empty();
         }
-        User user = UserMapper.INSTANCE.userRequestUpdateToUser(
+        UserEntity userEntity = UserMapper.INSTANCE.userRequestUpdateToUser(
                 userRequestUpdate,
                 roleOptional.get(),
                 userOptional.get()
         );
-        userRepository.save(user);
-        return Optional.of(UserMapper.INSTANCE.userToUserResponse(user));
+        userRepository.save(userEntity);
+        return Optional.of(UserMapper.INSTANCE.userToUserResponse(userEntity));
     }
+
+    @Override
+    public ResponseBase<String> login(LoginRequest loginRequest) {
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.getEmail(),
+                loginRequest.getPassword()
+        ));
+        if (auth.isAuthenticated()) {
+            UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(loginRequest.getEmail());
+            String jwt = jwtService.generateToken(userDetails);
+            return new ResponseBase<>(
+                    "Login successful",
+                    200,
+                    new ArrayList<>(),
+                    Optional.of(jwt)
+            );
+        }
+        return new ResponseBase<>(
+                "Login failed",
+                401,
+                List.of("Invalid credentials"),
+                Optional.empty()
+        );
+    }
+
     private List<String> validateInput(UserRequest userRequest) {
         List<String> errors = new ArrayList<>();
         if (userRequest.getEmail() == null || userRequest.getEmail().isEmpty()) {

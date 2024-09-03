@@ -7,7 +7,7 @@ import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.entity.Categorie;
 import org.ravn.moviescatalogchallenge.entity.Movie;
-import org.ravn.moviescatalogchallenge.entity.User;
+import org.ravn.moviescatalogchallenge.entity.UserEntity;
 import org.ravn.moviescatalogchallenge.mapper.MovieMapper;
 import org.ravn.moviescatalogchallenge.mapper.UserMapper;
 import org.ravn.moviescatalogchallenge.repository.CategoriesRepository;
@@ -37,7 +37,7 @@ public class MovieServiceImpl implements MovieService {
     public ResponseBase<MovieResponse> createMovie(MovieRequest movieRequest) {
         Optional<Movie> movieOptional = movieRepository.findByName(movieRequest.getName());
         List<Categorie> categories = categoriesRepository.findByNames(movieRequest.getCategories());
-        Optional<User> userOptional = userRepository.findById(movieRequest.getUserId());
+        Optional<UserEntity> userOptional = userRepository.findById(movieRequest.getUserId());
         List<String> categoriesThatNotExists = getCategoriesThatNotExists(categories, movieRequest);
         List<String> errors = validateInput(movieRequest);
         if (movieOptional.isPresent()) {
@@ -83,7 +83,7 @@ public class MovieServiceImpl implements MovieService {
                 .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
                         movie,
                         getCategoriesNames(movie),
-                        UserMapper.INSTANCE.userToUserResponse(movie.getUser())))
+                        UserMapper.INSTANCE.userToUserResponse(movie.getUserEntity())))
                 .collect(Collectors.toList());
     }
 
@@ -97,7 +97,7 @@ public class MovieServiceImpl implements MovieService {
                 .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
                         movie,
                         getCategoriesNames(movie),
-                        UserMapper.INSTANCE.userToUserResponse(movie.getUser())))
+                        UserMapper.INSTANCE.userToUserResponse(movie.getUserEntity())))
                 .collect(Collectors.toList());
     }
 

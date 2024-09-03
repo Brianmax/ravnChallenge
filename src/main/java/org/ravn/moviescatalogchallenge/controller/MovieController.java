@@ -5,6 +5,7 @@ import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.service.MovieService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class MovieController {
         this.movieService = movieService;
     }
 
-    @PostMapping("/save")
+    @PostMapping("/admin/save")
     public ResponseBase<MovieResponse> saveMovie(@RequestBody MovieRequest movieRequest) {
         return movieService.createMovie(movieRequest);
     }
