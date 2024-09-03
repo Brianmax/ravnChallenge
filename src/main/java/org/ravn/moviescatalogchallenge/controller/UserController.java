@@ -1,6 +1,7 @@
 package org.ravn.moviescatalogchallenge.controller;
 
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequest;
+import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +23,7 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveUser(@RequestBody UserRequest userRequest) {
-        Optional<UserResponse> userResponse = userService.createUser(userRequest);
-
-        if (userResponse.isEmpty()) {
-            return ResponseEntity.badRequest().body("User already exist or role does not exist");
-        }
-
-        return ResponseEntity.ok(userResponse.get());
+    public ResponseBase<UserResponse> saveUser(@RequestBody UserRequest userRequest) {
+        return userService.createUser(userRequest);
     }
 }
