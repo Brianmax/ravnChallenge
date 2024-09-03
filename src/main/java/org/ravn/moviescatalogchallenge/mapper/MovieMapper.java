@@ -8,7 +8,7 @@ import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.entity.Categorie;
 import org.ravn.moviescatalogchallenge.entity.Movie;
-import org.ravn.moviescatalogchallenge.entity.User;
+import org.ravn.moviescatalogchallenge.entity.UserEntity;
 
 import java.util.List;
 
@@ -20,8 +20,8 @@ public interface MovieMapper {
     @Mapping(target = "releaseDate", source = "movieRequest.releaseDate")
     @Mapping(target = "synopsis", source = "movieRequest.synopsis")
     @Mapping(target = "categories", source = "categories")
-    @Mapping(target = "user", source = "user")
-    Movie movieRequestToMovie(MovieRequest movieRequest, List<Categorie> categories, User user);
+    @Mapping(target = "userEntity", source = "userEntity")
+    Movie movieRequestToMovie(MovieRequest movieRequest, List<Categorie> categories, UserEntity userEntity);
 
     @Mapping(target = "name", source = "movie.name")
     @Mapping(target = "releaseDate", source = "movie.releaseDate")
