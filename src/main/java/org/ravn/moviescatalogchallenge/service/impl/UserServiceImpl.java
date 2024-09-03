@@ -2,6 +2,7 @@ package org.ravn.moviescatalogchallenge.service.impl;
 
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequest;
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequestUpdate;
+import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.entity.Role;
 import org.ravn.moviescatalogchallenge.entity.User;
@@ -11,6 +12,8 @@ import org.ravn.moviescatalogchallenge.repository.UserRepository;
 import org.ravn.moviescatalogchallenge.service.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,16 +27,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserResponse> createUser(UserRequest userRequest) {
+    public ResponseBase<UserResponse> createUser(UserRequest userRequest) {
         Optional<User> userOptional = userRepository.findByEmail(userRequest.getEmail());
         Optional<Role> roleOptional = roleRepository.findByRole(userRequest.getRole());
+        List<String> errors = validateInput(userRequest);
         // if the user already exist, or the role does not exist. We do nothing
-        if (userOptional.isPresent() || roleOptional.isEmpty()) {
-            return Optional.empty();
+        if (userOptional.isPresent()) {
+            errors.add("User already exists");
         }
+        if (roleOptional.isEmpty()) {
+            errors.add("Role not found");
+        }
+        if (!errors.isEmpty()) {
+            return new ResponseBase<>(
+                    "Error creating user",
+                    400,
+                    errors,
+                    Optional.empty());
+        }
+
         User user = UserMapper.INSTANCE.userRequestToUser(userRequest, roleOptional.get());
         userRepository.save(user);
-        return Optional.of(UserMapper.INSTANCE.userToUserResponse(user));
+        return new ResponseBase<>(
+                "User created",
+                200,
+                new ArrayList<>(),
+                Optional.of(UserMapper.INSTANCE.userToUserResponse(user)));
     }
 
     @Override
@@ -51,5 +70,18 @@ public class UserServiceImpl implements UserService {
         );
         userRepository.save(user);
         return Optional.of(UserMapper.INSTANCE.userToUserResponse(user));
+    }
+    private List<String> validateInput(UserRequest userRequest) {
+        List<String> errors = new ArrayList<>();
+        if (userRequest.getEmail() == null || userRequest.getEmail().isEmpty()) {
+            errors.add("Email is required");
+        }
+        if (userRequest.getPassword() == null || userRequest.getPassword().isEmpty()) {
+            errors.add("Password is required");
+        }
+        if (userRequest.getRole() == null || userRequest.getRole().isEmpty()) {
+            errors.add("Role is required");
+        }
+        return errors;
     }
 }

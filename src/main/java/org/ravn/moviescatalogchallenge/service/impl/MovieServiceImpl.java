@@ -1,8 +1,10 @@
 package org.ravn.moviescatalogchallenge.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import org.ravn.moviescatalogchallenge.aggregate.request.MovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
+import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.entity.Categorie;
 import org.ravn.moviescatalogchallenge.entity.Movie;
 import org.ravn.moviescatalogchallenge.entity.User;
@@ -32,19 +34,41 @@ public class MovieServiceImpl implements MovieService {
         this.userRepository = userRepository;
     }
     @Override
-    public MovieResponse createMovie(MovieRequest movieRequest) {
+    public ResponseBase<MovieResponse> createMovie(MovieRequest movieRequest) {
         Optional<Movie> movieOptional = movieRepository.findByName(movieRequest.getName());
         List<Categorie> categories = categoriesRepository.findByNames(movieRequest.getCategories());
         Optional<User> userOptional = userRepository.findById(movieRequest.getUserId());
-        if (movieOptional.isPresent() || categories.isEmpty() || userOptional.isEmpty()) {
-            return null;
+        List<String> categoriesThatNotExists = getCategoriesThatNotExists(categories, movieRequest);
+        List<String> errors = validateInput(movieRequest);
+        if (movieOptional.isPresent()) {
+            errors.add("Movie already exists");
+        }
+        if (userOptional.isEmpty()) {
+            errors.add("User not found");
+        }
+        if (categories.isEmpty() || categories.size() != movieRequest.getCategories().size()) {
+            errors.add("Categories not found: " + categoriesThatNotExists);
+        }
+
+        if (!errors.isEmpty()) {
+            return new ResponseBase<>(
+                    "Error creating movie",
+                    400,
+                    errors,
+                    Optional.empty());
         }
         Movie movie = MovieMapper.INSTANCE.movieRequestToMovie(movieRequest, categories, userOptional.get());
         movieRepository.save(movie);
-        return MovieMapper.INSTANCE.movieToMovieResponse(
+        MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 movieRequest.getCategories(),
                 UserMapper.INSTANCE.userToUserResponse(userOptional.get()));
+
+        return new ResponseBase<>(
+                "Movie created successfully",
+                200,
+                errors,
+                Optional.of(movieResponse));
     }
 
     @Override
@@ -84,5 +108,28 @@ public class MovieServiceImpl implements MovieService {
 
     private List<String> getCategoriesNames(Movie movie) {
         return movie.getCategories().stream().map(Categorie::getName).collect(Collectors.toList());
+    }
+
+    private List<String> getCategoriesThatNotExists(List<Categorie> categories, MovieRequest movieRequest) {
+        return movieRequest.getCategories().stream()
+                .filter(category -> categories.stream().noneMatch(categorie -> categorie.getName().equals(category)))
+                .collect(Collectors.toList());
+    }
+
+    private List<String> validateInput(MovieRequest movieRequest) {
+        List<String> errors = new ArrayList<>();
+        if (movieRequest.getName() == null || movieRequest.getName().isEmpty()) {
+            errors.add("Name is required");
+        }
+        if (movieRequest.getReleaseDate() == null) {
+            errors.add("Release date is required");
+        }
+        if (movieRequest.getCategories() == null || movieRequest.getCategories().isEmpty()) {
+            errors.add("Categories are required");
+        }
+        if (movieRequest.getUserId() == 0) {
+            errors.add("User is required");
+        }
+        return errors;
     }
 }

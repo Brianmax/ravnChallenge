@@ -2,6 +2,7 @@ package org.ravn.moviescatalogchallenge.controller;
 
 import org.ravn.moviescatalogchallenge.aggregate.request.MovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
+import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.service.MovieService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +19,8 @@ public class MovieController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveMovie(@RequestBody MovieRequest movieRequest) {
-        MovieResponse movieResponse = movieService.createMovie(movieRequest);
-        if (movieResponse == null) {
-            return ResponseEntity.badRequest().body("Movie already exist or categories do not exist");
-        }
-        return ResponseEntity.ok(movieResponse);
+    public ResponseBase<MovieResponse> saveMovie(@RequestBody MovieRequest movieRequest) {
+        return movieService.createMovie(movieRequest);
     }
     @GetMapping("/all")
     public ResponseEntity<?> getAllMovies(@RequestParam int page, @RequestParam int size) {
