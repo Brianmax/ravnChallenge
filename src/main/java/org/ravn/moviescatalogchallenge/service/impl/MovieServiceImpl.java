@@ -79,7 +79,7 @@ public class MovieServiceImpl implements MovieService {
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 movieCreateRequest.getCategories(),
-                UserMapper.INSTANCE.userToUserResponse(userOptional.get()));
+                movie.getUserEntity().getEmail());
 
         return new ResponseBase<>(
                 "Movie created successfully",
@@ -100,7 +100,7 @@ public class MovieServiceImpl implements MovieService {
                 .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
                         movie,
                         getCategoriesNames(movie),
-                        UserMapper.INSTANCE.userToUserResponse(movie.getUserEntity())))
+                        movie.getUserEntity().getEmail()))
                 .collect(Collectors.toList());
     }
 
@@ -143,7 +143,7 @@ public class MovieServiceImpl implements MovieService {
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 movieUpdateRequest.getCategories(),
-                UserMapper.INSTANCE.userToUserResponse(movie.getUserEntity()));
+                movie.getUserEntity().getEmail());
 
         return new ResponseBase<>(
                 "Movie updated successfully",
@@ -173,7 +173,7 @@ public class MovieServiceImpl implements MovieService {
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 getCategoriesNames(movie),
-                UserMapper.INSTANCE.userToUserResponse(movie.getUserEntity()));
+                movie.getUserEntity().getEmail());
         movieRepository.save(movie);
         return new ResponseBase<>(
                 "Movie deleted successfully",
@@ -198,7 +198,7 @@ public class MovieServiceImpl implements MovieService {
                 .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
                         movie,
                         getCategoriesNames(movie),
-                        UserMapper.INSTANCE.userToUserResponse(movie.getUserEntity())));
+                        movie.getUserEntity().getEmail()));
     }
 
 

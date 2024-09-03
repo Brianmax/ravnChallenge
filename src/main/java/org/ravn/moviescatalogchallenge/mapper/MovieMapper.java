@@ -37,11 +37,11 @@ public interface MovieMapper {
     @Mapping(target = "releaseYear", source = "movie.releaseYear")
     @Mapping(target = "synopsis", source = "movie.synopsis")
     @Mapping(target = "categories", source = "categories")
-    @Mapping(target = "createdBy", source = "userResponse")
+    @Mapping(target = "createdBy", source = "user")
     @Mapping(target = "createdAt", source = "movie.createdAt")
     @Mapping(target = "updatedAt", source = "movie.updatedAt")
     @Mapping(target = "updatedBy", source = "movie.updatedBy")
-    MovieResponse movieToMovieResponse(Movie movie, List<String> categories, UserResponse userResponse);
+    MovieResponse movieToMovieResponse(Movie movie, List<String> categories, String user);
 
 
     @Mapping(target = "name", source = "movieUpdateRequest.name")
