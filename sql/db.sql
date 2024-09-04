@@ -3,13 +3,11 @@ CREATE TABLE role (
                       role VARCHAR(255) NOT NULL
 );
 
--- Table: category
 CREATE TABLE category (
                           category_id SERIAL PRIMARY KEY,
                           name VARCHAR(255) NOT NULL
 );
 
--- Table: user_entity
 CREATE TABLE user_entity (
                              user_id SERIAL PRIMARY KEY,
                              email VARCHAR(255) NOT NULL,
@@ -17,7 +15,6 @@ CREATE TABLE user_entity (
                              role_id INT REFERENCES role(role_id)
 );
 
--- Table: movie
 CREATE TABLE movies (
                        movie_id SERIAL PRIMARY KEY,
                        name VARCHAR(255) NOT NULL,
@@ -33,7 +30,6 @@ CREATE TABLE movies (
                        user_id INT REFERENCES user_entity(user_id)
 );
 
--- Table: rate
 CREATE TABLE rate (
                       rate_id SERIAL PRIMARY KEY,
                       rate FLOAT NOT NULL,
@@ -41,7 +37,6 @@ CREATE TABLE rate (
                       user_id INT REFERENCES user_entity(user_id)
 );
 
--- Table: movie_categories (junction table for Movie and Category many-to-many relationship)
 CREATE TABLE movie_categories (
                                   movie_id INT REFERENCES movies(movie_id),
                                   category_id INT REFERENCES category(category_id)
@@ -50,11 +45,9 @@ CREATE TABLE movie_categories (
 INSERT INTO role (role) VALUES ('USER');
 INSERT INTO role (role) VALUES ('ADMIN');
 
--- Insertar usuarios
 INSERT INTO user_entity (email, password, role_id) VALUES ('user@example.com', 'password123', 1); -- USER role
 INSERT INTO user_entity (email, password, role_id) VALUES ('admin@example.com', 'adminpass', 2); -- ADMIN role
 
--- Insertar categorías de películas
 INSERT INTO category (name) VALUES ('Action');
 INSERT INTO category (name) VALUES ('Comedy');
 INSERT INTO category (name) VALUES ('Drama');
@@ -62,7 +55,6 @@ INSERT INTO category (name) VALUES ('Horror');
 INSERT INTO category (name) VALUES ('Science Fiction');
 INSERT INTO category (name) VALUES ('Thriller');
 
--- Insertar películas
 INSERT INTO movies (name, release_year, synopsis, created_at, user_id)
 VALUES
     ('Inception', 2010, 'A skilled thief is given a chance at redemption if he can successfully perform inception.', NOW(), 2),
@@ -71,7 +63,6 @@ VALUES
 ('The Godfather', 1972, 'The aging patriarch of an organized crime dynasty transfers control of his empire to his reluctant son.', NOW(), 2),
 ('The Dark Knight', 2008, 'Batman battles the Joker, who plunges Gotham City into anarchy.', NOW(), 2);
 
--- Asociar películas con categorías (opcional)
 INSERT INTO movie_categories (movie_id, category_id) VALUES (1, 5); -- Inception -> Science Fiction
 INSERT INTO movie_categories (movie_id, category_id) VALUES (2, 5); -- The Matrix -> Science Fiction
 INSERT INTO movie_categories (movie_id, category_id) VALUES (3, 5); -- Interstellar -> Science Fiction
