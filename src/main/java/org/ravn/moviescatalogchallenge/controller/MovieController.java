@@ -4,10 +4,7 @@ import org.ravn.moviescatalogchallenge.aggregate.request.BaseMovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.service.MovieService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,20 +35,18 @@ public class MovieController {
         return ResponseEntity.ok(movieResponses);
     }
     @GetMapping("/search")
-    public ResponseBase<Page<MovieResponse>> getMovies(
+    public ResponseBase<List<MovieResponse>> getMovies(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String categoryName,
             @RequestParam(required = false) Integer releaseYear,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "releaseYear") String[] sort) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-        Page<MovieResponse> movies = movieService.searchMovies(keyword, categoryName, releaseYear, pageable);
-        return new ResponseBase<>(
-                "Movies retrieved successfully",
-                200,
-                new ArrayList<>(),
-                Optional.of(movies));
+        List<MovieResponse> movieResponses = movieService.searchMovies(keyword, categoryName, releaseYear, PageRequest.of(page, size, Sort.by(sort)));
+        if (movieResponses.isEmpty()) {
+            return new ResponseBase<>("No movies found", 404, new ArrayList<>(), Optional.empty());
+        }
+        return new ResponseBase<>("Movies found", 200, new ArrayList<>(), Optional.of(movieResponses));
     }
     @PutMapping("/admin/update")
     public ResponseBase<MovieResponse> updateMovie(@RequestBody BaseMovieRequest movieUpdateRequest, @RequestParam String movieName) {

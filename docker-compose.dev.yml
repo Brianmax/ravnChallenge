@@ -31,6 +31,8 @@ services:
       URL_DATASOURCE: jdbc:postgresql://postgres:5432/movies_dev
       USERNAME: postgres
       PASSWORD: admin
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - postgres
     volumes:

@@ -13,6 +13,9 @@ import org.ravn.moviescatalogchallenge.repository.UserRepository;
 import org.ravn.moviescatalogchallenge.security.UserDetailsServiceImpl;
 import org.ravn.moviescatalogchallenge.service.JwtService;
 import org.ravn.moviescatalogchallenge.service.UserService;
+import org.ravn.moviescatalogchallenge.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtService jwtService, UserDetailsServiceImpl userDetailsServiceImpl) {
         this.userRepository = userRepository;
@@ -89,20 +93,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseBase<String> login(LoginRequest loginRequest) {
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginRequest.getEmail(),
-                loginRequest.getPassword()
-        ));
-        if (auth.isAuthenticated()) {
-            UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(loginRequest.getEmail());
-            String jwt = jwtService.generateToken(userDetails);
-            return new ResponseBase<>(
-                    "Login successful",
-                    200,
-                    new ArrayList<>(),
-                    Optional.of(jwt)
-            );
+        try {
+            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    loginRequest.getEmail(),
+                    loginRequest.getPassword()
+            ));
+            if (auth.isAuthenticated()) {
+                UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(loginRequest.getEmail());
+                String jwt = jwtService.generateToken(userDetails);
+                return new ResponseBase<>(
+                        "Login successful",
+                        200,
+                        new ArrayList<>(),
+                        Optional.of(jwt)
+                );
+            }
+        } catch (Exception e) {
+            String errorMessage = "Error login: " + e.getMessage();
+            logger.error(errorMessage);
         }
+
         return new ResponseBase<>(
                 "Login failed",
                 401,

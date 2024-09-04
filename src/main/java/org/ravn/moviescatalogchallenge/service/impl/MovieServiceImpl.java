@@ -7,6 +7,7 @@ import java.util.Collections;
 import org.ravn.moviescatalogchallenge.aggregate.request.BaseMovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
+import org.ravn.moviescatalogchallenge.config.RedisService;
 import org.ravn.moviescatalogchallenge.entity.Category;
 import org.ravn.moviescatalogchallenge.entity.Movie;
 import org.ravn.moviescatalogchallenge.entity.UserEntity;
@@ -16,12 +17,11 @@ import org.ravn.moviescatalogchallenge.repository.MovieRepository;
 import org.ravn.moviescatalogchallenge.repository.UserRepository;
 import org.ravn.moviescatalogchallenge.repository.specification.MovieSpecification;
 import org.ravn.moviescatalogchallenge.service.MovieService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import static org.ravn.moviescatalogchallenge.utils.Utils.getLoggedUser;
+import static org.ravn.moviescatalogchallenge.utils.Utils.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -34,12 +34,14 @@ public class MovieServiceImpl implements MovieService {
     private final CategoriesRepository categoriesRepository;
     private final UserRepository userRepository;
     private final HttpServletRequest request;
+    private final RedisService redisService;
 
-    public MovieServiceImpl(MovieRepository movieRepository, CategoriesRepository categoriesRepository, UserRepository userRepository, HttpServletRequest request) {
+    public MovieServiceImpl(MovieRepository movieRepository, CategoriesRepository categoriesRepository, UserRepository userRepository, HttpServletRequest request, RedisService redisService) {
         this.movieRepository = movieRepository;
         this.categoriesRepository = categoriesRepository;
         this.userRepository = userRepository;
         this.request = request;
+        this.redisService = redisService;
     }
     @Override
     public ResponseBase<MovieResponse> createMovie(BaseMovieRequest movieCreateRequest) {
@@ -177,20 +179,25 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Page<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable) {
+    public List<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable) {
         Specification<Movie> specification = Specification
                 .where(MovieSpecification.hasCategory(keyword))
                 .or(MovieSpecification.hasCategory(categoryName))
                 .or(MovieSpecification.hasReleaseYear(releaseYear));
         List<Movie> movies = movieRepository.findAll(specification, pageable).getContent();
         if(movies.isEmpty()) {
-            return Page.empty();
+            return Collections.emptyList();
         }
-        return movieRepository.findAll(specification, pageable)
+        String key = request.getQueryString();
+        List<MovieResponse> movieResponses = movies.stream()
                 .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
                         movie,
                         getCategoriesNames(movie),
-                        movie.getUserEntity().getEmail()));
+                        movie.getUserEntity().getEmail()))
+                .collect(Collectors.toList());
+        String redisData = convertToJson(movieResponses);
+        redisService.saveKeyValue(key, redisData, 5);
+        return movieResponses;
     }
 
 
