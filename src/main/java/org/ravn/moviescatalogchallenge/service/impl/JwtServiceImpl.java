@@ -31,7 +31,6 @@ public class JwtServiceImpl implements JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() + 1200000))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
-
     }
     @Override
     public boolean validateToken(String token, UserDetails userDetails){
