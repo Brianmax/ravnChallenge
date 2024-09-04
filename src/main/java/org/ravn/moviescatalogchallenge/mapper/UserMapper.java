@@ -9,6 +9,8 @@ import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.entity.Role;
 import org.ravn.moviescatalogchallenge.entity.UserEntity;
 
+import java.sql.Date;
+
 @Mapper
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
