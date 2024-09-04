@@ -3,20 +3,22 @@ package org.ravn.moviescatalogchallenge.service.impl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.ravn.moviescatalogchallenge.service.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
 public class JwtServiceImpl implements JwtService {
+    private final Logger logger = LoggerFactory.getLogger(JwtServiceImpl.class);
     @Override
     public String generateToken(UserDetails userDetails){
         Map<String,Object> claims = new HashMap<>();
@@ -26,10 +28,9 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 120000000))
+                .setExpiration(new Date(System.currentTimeMillis() + 1200000))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
-
     }
     @Override
     public boolean validateToken(String token, UserDetails userDetails){
@@ -43,11 +44,21 @@ public class JwtServiceImpl implements JwtService {
 
     private <T> T extractClaims(String token, Function<Claims,T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
+        if (claims.isEmpty()) {
+            return null;
+        }
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token){
-        return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
+        try {
+            return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
+        } catch (Exception e){
+            String errorMessage = "Error parsing token " + e.getMessage();
+            logger.error(errorMessage);
+            return new DefaultClaims();
+        }
+
     }
 
     private Key getSignKey(){
@@ -56,6 +67,10 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private boolean isTokenExpired(String token){
-        return extractClaims(token,Claims::getExpiration).before(new Date());
+        Date date = extractClaims(token,Claims::getExpiration);
+        if (date == null) {
+            return true;
+        }
+        return date.before(new Date());
     }
 }

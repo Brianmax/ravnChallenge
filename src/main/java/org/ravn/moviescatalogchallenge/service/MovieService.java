@@ -13,5 +13,5 @@ public interface MovieService {
     List<MovieResponse> getAllMovies(int page, int size);
     ResponseBase<MovieResponse> updateMovie(BaseMovieRequest movieUpdateRequest, String movieName);
     ResponseBase<MovieResponse> deleteMovie(String movieName);
-    Page<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable);
+    List<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable);
 }
