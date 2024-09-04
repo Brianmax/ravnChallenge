@@ -15,5 +15,4 @@ public class Category {
     @Column(name = "category_id")
     private Long categoryId;
     private String name;
-    private String description;
 }

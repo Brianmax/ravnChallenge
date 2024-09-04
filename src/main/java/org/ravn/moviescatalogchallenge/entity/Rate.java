@@ -14,7 +14,7 @@ public class Rate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "rate_id")
     private Long rateId;
-    private int rate;
+    private float rate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "movie_id")

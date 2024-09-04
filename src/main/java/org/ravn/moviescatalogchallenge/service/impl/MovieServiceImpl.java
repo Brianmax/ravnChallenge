@@ -13,7 +13,6 @@ import org.ravn.moviescatalogchallenge.entity.Category;
 import org.ravn.moviescatalogchallenge.entity.Movie;
 import org.ravn.moviescatalogchallenge.entity.UserEntity;
 import org.ravn.moviescatalogchallenge.mapper.MovieMapper;
-import org.ravn.moviescatalogchallenge.mapper.UserMapper;
 import org.ravn.moviescatalogchallenge.repository.CategoriesRepository;
 import org.ravn.moviescatalogchallenge.repository.MovieRepository;
 import org.ravn.moviescatalogchallenge.repository.UserRepository;
@@ -185,7 +184,6 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Page<MovieResponse> searchMovies(String keyword, String categoryName, int releaseYear, Pageable pageable) {
-        Specification<Movie> spec1 = MovieSpecification.hasReleaseYear(releaseYear);
         Specification<Movie> specification = Specification
                 .where(MovieSpecification.hasCategory(keyword))
                 .or(MovieSpecification.hasCategory(categoryName))
