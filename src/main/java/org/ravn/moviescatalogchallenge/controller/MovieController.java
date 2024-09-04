@@ -7,6 +7,7 @@ import org.ravn.moviescatalogchallenge.service.MovieService;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,5 +57,9 @@ public class MovieController {
     @DeleteMapping("/admin/delete")
     public ResponseBase<MovieResponse> deleteMovie(@RequestParam String movieName) {
         return movieService.deleteMovie(movieName);
+    }
+    @PostMapping("/admin/upload")
+    public ResponseBase<String> uploadImage(@RequestParam String movieName, @RequestParam MultipartFile file) {
+        return movieService.uploadImage(movieName, file);
     }
 }

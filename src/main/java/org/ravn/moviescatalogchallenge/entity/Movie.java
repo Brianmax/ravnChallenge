@@ -19,6 +19,7 @@ public class Movie {
     private String name;
     private int releaseYear;
     private String synopsis;
+    private String poster;
     private Date createdAt;
     private Date updatedAt;
     private String updatedBy;

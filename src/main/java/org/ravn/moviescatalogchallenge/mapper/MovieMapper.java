@@ -39,7 +39,8 @@ public interface MovieMapper {
     @Mapping(target = "createdAt", source = "movie.createdAt")
     @Mapping(target = "updatedAt", source = "movie.updatedAt")
     @Mapping(target = "updatedBy", source = "movie.updatedBy")
-    MovieResponse movieToMovieResponse(Movie movie, List<String> categories, String user);
+    @Mapping(target = "presignedUrl", source = "presignedUrl")
+    MovieResponse movieToMovieResponse(Movie movie, List<String> categories, String user, String presignedUrl);
 
 
     @Mapping(target = "name", source = "movieUpdateRequest.name")
