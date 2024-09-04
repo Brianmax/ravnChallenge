@@ -7,6 +7,7 @@ import org.ravn.moviescatalogchallenge.service.MovieService;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +42,11 @@ public class MovieController {
             @RequestParam(required = false) Integer releaseYear,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "releaseYear") String[] sort) {
-        List<MovieResponse> movieResponses = movieService.searchMovies(keyword, categoryName, releaseYear, PageRequest.of(page, size, Sort.by(sort)));
+            @RequestParam(defaultValue = "releaseYear") String[] sort,
+            @RequestParam(defaultValue = "ASC") String direction){
+
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        List<MovieResponse> movieResponses = movieService.searchMovies(keyword, categoryName, releaseYear, PageRequest.of(page, size, sortDirection, sort));
         if (movieResponses.isEmpty()) {
             return new ResponseBase<>("No movies found", 404, new ArrayList<>(), Optional.empty());
         }
@@ -56,5 +60,9 @@ public class MovieController {
     @DeleteMapping("/admin/delete")
     public ResponseBase<MovieResponse> deleteMovie(@RequestParam String movieName) {
         return movieService.deleteMovie(movieName);
+    }
+    @PostMapping("/admin/upload")
+    public ResponseBase<String> uploadImage(@RequestParam String movieName, @RequestParam MultipartFile file) {
+        return movieService.uploadImage(movieName, file);
     }
 }

@@ -6,10 +6,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.Join;
+import java.util.List;
+
 public class MovieSpecification {
     public static Specification<Movie> hasNameOrSynopsis(String keyword) {
         return (root, query, criteriaBuilder) -> {
-            if (keyword == null) {
+            if (keyword == null || keyword.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
             String likePattern = "%" + keyword.toLowerCase() + "%";
@@ -20,22 +22,23 @@ public class MovieSpecification {
         };
     }
 
-    public static Specification<Movie> hasCategory(String categoryName) {
+    public static Specification<Movie> hasCategoryName(String categoryName) {
         return (root, query, criteriaBuilder) -> {
-            if (categoryName == null) {
+            if (categoryName == null || categoryName.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            Join<Movie, Category> categories = root.join("categories");
-            return criteriaBuilder.equal(categories.get("name"), categoryName);
+            Join<Movie, Category> categoryJoin = root.join("categories");
+            return criteriaBuilder.equal(criteriaBuilder.lower(categoryJoin.get("name")), categoryName.toLowerCase());
         };
     }
 
-    public static Specification<Movie> hasReleaseYear(Integer releaseYear) {
+
+    public static Specification<Movie> releasedInYear(Integer year) {
         return (root, query, criteriaBuilder) -> {
-            if (releaseYear == null) {
+            if (year == null) {
                 return criteriaBuilder.conjunction();
             }
-            return criteriaBuilder.equal(root.get("releaseYear"), releaseYear);
+            return criteriaBuilder.equal(root.get("releaseYear"), year);
         };
     }
 }

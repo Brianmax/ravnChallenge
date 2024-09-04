@@ -3,6 +3,7 @@ package org.ravn.moviescatalogchallenge.aggregate.response;
 import lombok.Getter;
 import lombok.Setter;
 import org.ravn.moviescatalogchallenge.aggregate.request.BaseMovieRequest;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.sql.Date;
 
@@ -16,4 +17,5 @@ public class MovieResponse extends BaseMovieRequest {
     private boolean deleted;
     private Date deletedAt;
     private String deletedBy;
+    private String presignedUrl;
 }

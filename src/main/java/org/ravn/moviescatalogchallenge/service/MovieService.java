@@ -3,8 +3,8 @@ package org.ravn.moviescatalogchallenge.service;
 import org.ravn.moviescatalogchallenge.aggregate.request.BaseMovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,4 +14,5 @@ public interface MovieService {
     ResponseBase<MovieResponse> updateMovie(BaseMovieRequest movieUpdateRequest, String movieName);
     ResponseBase<MovieResponse> deleteMovie(String movieName);
     List<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable);
+    ResponseBase<String> uploadImage(String movieName, MultipartFile file);
 }

@@ -16,11 +16,14 @@ import org.ravn.moviescatalogchallenge.repository.CategoriesRepository;
 import org.ravn.moviescatalogchallenge.repository.MovieRepository;
 import org.ravn.moviescatalogchallenge.repository.UserRepository;
 import org.ravn.moviescatalogchallenge.repository.specification.MovieSpecification;
+import org.ravn.moviescatalogchallenge.service.MinioService;
 import org.ravn.moviescatalogchallenge.service.MovieService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import static org.ravn.moviescatalogchallenge.utils.Utils.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,13 +38,15 @@ public class MovieServiceImpl implements MovieService {
     private final UserRepository userRepository;
     private final HttpServletRequest request;
     private final RedisService redisService;
+    private final MinioService minioService;
 
-    public MovieServiceImpl(MovieRepository movieRepository, CategoriesRepository categoriesRepository, UserRepository userRepository, HttpServletRequest request, RedisService redisService) {
+    public MovieServiceImpl(MovieRepository movieRepository, CategoriesRepository categoriesRepository, UserRepository userRepository, HttpServletRequest request, RedisService redisService, MinioService minioService) {
         this.movieRepository = movieRepository;
         this.categoriesRepository = categoriesRepository;
         this.userRepository = userRepository;
         this.request = request;
         this.redisService = redisService;
+        this.minioService = minioService;
     }
     @Override
     public ResponseBase<MovieResponse> createMovie(BaseMovieRequest movieCreateRequest) {
@@ -77,7 +82,8 @@ public class MovieServiceImpl implements MovieService {
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 movieCreateRequest.getCategories(),
-                userLogged);
+                userLogged,
+                minioService.getPresignedUrl(movie.getPoster()));
 
         return new ResponseBase<>(
                 "Movie created successfully",
@@ -98,7 +104,8 @@ public class MovieServiceImpl implements MovieService {
                 .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
                         movie,
                         getCategoriesNames(movie),
-                        movie.getUserEntity().getEmail()))
+                        movie.getUserEntity().getEmail(),
+                        minioService.getPresignedUrl(movie.getPoster())))
                 .collect(Collectors.toList());
     }
 
@@ -139,7 +146,8 @@ public class MovieServiceImpl implements MovieService {
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 movieUpdateRequest.getCategories(),
-                userLogged);
+                userLogged,
+                minioService.getPresignedUrl(movie.getPoster()));
 
         return new ResponseBase<>(
                 "Movie updated successfully",
@@ -168,7 +176,8 @@ public class MovieServiceImpl implements MovieService {
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 getCategoriesNames(movie),
-                movie.getUserEntity().getEmail());
+                movie.getUserEntity().getEmail(),
+                minioService.getPresignedUrl(movie.getPoster()));
         movieRepository.save(movie);
         return new ResponseBase<>(
                 "Movie deleted successfully",
@@ -180,27 +189,62 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public List<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable) {
+        String key = request.getQueryString();
+        String redisInfo = redisService.getValueByKey(key);
+        if (redisInfo != null) {
+            return convertFromJson(redisInfo, List.class);
+        }
         Specification<Movie> specification = Specification
-                .where(MovieSpecification.hasCategory(keyword))
-                .or(MovieSpecification.hasCategory(categoryName))
-                .or(MovieSpecification.hasReleaseYear(releaseYear));
+                .where(MovieSpecification.hasNameOrSynopsis(keyword))
+                .and(MovieSpecification.releasedInYear(releaseYear))
+                .and(MovieSpecification.hasCategoryName(categoryName));
         List<Movie> movies = movieRepository.findAll(specification, pageable).getContent();
         if(movies.isEmpty()) {
             return Collections.emptyList();
         }
-        String key = request.getQueryString();
+
         List<MovieResponse> movieResponses = movies.stream()
                 .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
                         movie,
                         getCategoriesNames(movie),
-                        movie.getUserEntity().getEmail()))
+                        movie.getUserEntity().getEmail(),
+                        minioService.getPresignedUrl(movie.getPoster())))
                 .collect(Collectors.toList());
         String redisData = convertToJson(movieResponses);
         redisService.saveKeyValue(key, redisData, 5);
         return movieResponses;
     }
 
+    @Override
+    public ResponseBase<String> uploadImage(String movieName, MultipartFile file) {
+        Optional<Movie> movieOptional = movieRepository.findByName(movieName);
+        List <String> errors = new ArrayList<>();
+        if (movieOptional.isEmpty()) {
+            errors.add("Movie not found");
+        }
+        String imageName = minioService.uploadImage(file);
+        if (imageName == null) {
+            errors.add("Error uploading image");
+        }
 
+        if (movieOptional.isPresent() && imageName != null) {
+            Movie movie = movieOptional.get();
+            movie.setPoster(imageName);
+            movieRepository.save(movie);
+            return new ResponseBase<>(
+                    "Image uploaded successfully",
+                    200,
+                    errors,
+                    Optional.of(imageName)
+            );
+        }
+        return new ResponseBase<>(
+                "Error uploading image",
+                400,
+                errors,
+                Optional.empty()
+        );
+    }
 
 
     private List<String> getCategoriesNames(Movie movie) {
