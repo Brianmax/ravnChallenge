@@ -42,8 +42,11 @@ public class MovieController {
             @RequestParam(required = false) Integer releaseYear,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "releaseYear") String[] sort) {
-        List<MovieResponse> movieResponses = movieService.searchMovies(keyword, categoryName, releaseYear, PageRequest.of(page, size, Sort.by(sort)));
+            @RequestParam(defaultValue = "releaseYear") String[] sort,
+            @RequestParam(defaultValue = "ASC") String direction){
+
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        List<MovieResponse> movieResponses = movieService.searchMovies(keyword, categoryName, releaseYear, PageRequest.of(page, size, sortDirection, sort));
         if (movieResponses.isEmpty()) {
             return new ResponseBase<>("No movies found", 404, new ArrayList<>(), Optional.empty());
         }

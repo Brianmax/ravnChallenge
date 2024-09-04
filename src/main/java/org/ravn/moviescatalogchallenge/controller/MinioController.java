@@ -10,7 +10,6 @@ public class MinioController {
 
     private final MinioService minioService;
 
-
     public MinioController(MinioService minioService) {
         this.minioService = minioService;
     }

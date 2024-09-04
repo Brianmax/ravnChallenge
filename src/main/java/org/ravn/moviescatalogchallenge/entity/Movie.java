@@ -15,7 +15,7 @@ public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
-    private Long movieId;
+    private int movieId;
     private String name;
     private int releaseYear;
     private String synopsis;
@@ -28,7 +28,7 @@ public class Movie {
     private String deletedBy;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

@@ -189,15 +189,20 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public List<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable) {
+        String key = request.getQueryString();
+        String redisInfo = redisService.getValueByKey(key);
+        if (redisInfo != null) {
+            return convertFromJson(redisInfo, List.class);
+        }
         Specification<Movie> specification = Specification
-                .where(MovieSpecification.hasCategory(keyword))
-                .or(MovieSpecification.hasCategory(categoryName))
-                .or(MovieSpecification.hasReleaseYear(releaseYear));
+                .where(MovieSpecification.hasNameOrSynopsis(keyword))
+                .and(MovieSpecification.releasedInYear(releaseYear))
+                .and(MovieSpecification.hasCategoryName(categoryName));
         List<Movie> movies = movieRepository.findAll(specification, pageable).getContent();
         if(movies.isEmpty()) {
             return Collections.emptyList();
         }
-        String key = request.getQueryString();
+
         List<MovieResponse> movieResponses = movies.stream()
                 .map(movie -> MovieMapper.INSTANCE.movieToMovieResponse(
                         movie,
