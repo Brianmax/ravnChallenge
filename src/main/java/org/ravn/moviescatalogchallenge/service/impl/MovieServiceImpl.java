@@ -116,7 +116,7 @@ public class MovieServiceImpl implements MovieService {
         List<String> categoriesThatNotExists = getCategoriesThatNotExists(categories, movieUpdateRequest.getCategories());
         Optional<Movie> movieOptional = movieRepository.findByName(movieName);
         List<String> errors = validateInput(movieUpdateRequest);
-        if (movieRepository.existsByName(movieUpdateRequest.getName())) {
+        if (movieRepository.existsByName(movieUpdateRequest.getName()) && !movieUpdateRequest.getName().equals(movieName)) {
             errors.add("Movie name already exists");
         }
         if (categories.isEmpty() || categories.size() != movieUpdateRequest.getCategories().size()) {
