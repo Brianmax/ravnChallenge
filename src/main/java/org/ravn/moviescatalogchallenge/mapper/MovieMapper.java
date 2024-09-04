@@ -4,10 +4,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
-import org.ravn.moviescatalogchallenge.aggregate.request.MovieCreateRequest;
-import org.ravn.moviescatalogchallenge.aggregate.request.MovieUpdateRequest;
+import org.ravn.moviescatalogchallenge.aggregate.request.BaseMovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
-import org.ravn.moviescatalogchallenge.aggregate.response.UserResponse;
 import org.ravn.moviescatalogchallenge.entity.Category;
 import org.ravn.moviescatalogchallenge.entity.Movie;
 import org.ravn.moviescatalogchallenge.entity.UserEntity;
@@ -29,7 +27,7 @@ public interface MovieMapper {
     @Mapping(target = "deletedAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     Movie movieRequestToMovie(
-            MovieCreateRequest movieCreateRequest,
+            BaseMovieRequest movieCreateRequest,
             List<Category> categories,
             UserEntity userEntity,
             Date createdAt);
@@ -50,7 +48,7 @@ public interface MovieMapper {
     @Mapping(target = "categories", source = "categories")
     @Mapping(target = "updatedAt", source = "updatedAt")
     @Mapping(target = "updatedBy", source = "updatedBy")
-    void updateMovieFromMovieUpdateRequest(MovieUpdateRequest movieUpdateRequest,
+    void updateMovieFromMovieUpdateRequest(BaseMovieRequest movieUpdateRequest,
                                            @MappingTarget Movie movie,
                                            List<Category> categories,
                                            Date updatedAt,
