@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.ravn.moviescatalogchallenge.aggregate.request.BaseMovieRequest;
-import org.ravn.moviescatalogchallenge.aggregate.request.MovieCreateRequest;
-import org.ravn.moviescatalogchallenge.aggregate.request.MovieUpdateRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.entity.Category;
@@ -17,13 +15,13 @@ import org.ravn.moviescatalogchallenge.repository.CategoriesRepository;
 import org.ravn.moviescatalogchallenge.repository.MovieRepository;
 import org.ravn.moviescatalogchallenge.repository.UserRepository;
 import org.ravn.moviescatalogchallenge.repository.specification.MovieSpecification;
-import org.ravn.moviescatalogchallenge.service.JwtService;
 import org.ravn.moviescatalogchallenge.service.MovieService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import static org.ravn.moviescatalogchallenge.utils.Utils.getLoggedUser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -36,22 +34,21 @@ public class MovieServiceImpl implements MovieService {
     private final CategoriesRepository categoriesRepository;
     private final UserRepository userRepository;
     private final HttpServletRequest request;
-    private final JwtService jwtService;
 
-    public MovieServiceImpl(MovieRepository movieRepository, CategoriesRepository categoriesRepository, UserRepository userRepository, HttpServletRequest request, JwtService jwtService) {
+    public MovieServiceImpl(MovieRepository movieRepository, CategoriesRepository categoriesRepository, UserRepository userRepository, HttpServletRequest request) {
         this.movieRepository = movieRepository;
         this.categoriesRepository = categoriesRepository;
         this.userRepository = userRepository;
         this.request = request;
-        this.jwtService = jwtService;
     }
     @Override
-    public ResponseBase<MovieResponse> createMovie(MovieCreateRequest movieCreateRequest) {
+    public ResponseBase<MovieResponse> createMovie(BaseMovieRequest movieCreateRequest) {
+        String userLogged = getLoggedUser(request);
         Optional<Movie> movieOptional = movieRepository.findByName(movieCreateRequest.getName());
         List<Category> categories = categoriesRepository.findByNames(movieCreateRequest.getCategories());
-        Optional<UserEntity> userOptional = userRepository.findById(movieCreateRequest.getUserId());
+        Optional<UserEntity> userOptional = userRepository.findByEmail(userLogged);
         List<String> categoriesThatNotExists = getCategoriesThatNotExists(categories, movieCreateRequest.getCategories());
-        List<String> errors = validateInputCreate(movieCreateRequest);
+        List<String> errors = validateInput(movieCreateRequest);
         if (movieOptional.isPresent()) {
             errors.add("Movie already exists");
         }
@@ -78,7 +75,7 @@ public class MovieServiceImpl implements MovieService {
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 movieCreateRequest.getCategories(),
-                movie.getUserEntity().getEmail());
+                userLogged);
 
         return new ResponseBase<>(
                 "Movie created successfully",
@@ -104,7 +101,8 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public ResponseBase<MovieResponse> updateMovie(MovieUpdateRequest movieUpdateRequest, String movieName) {
+    public ResponseBase<MovieResponse> updateMovie(BaseMovieRequest movieUpdateRequest, String movieName) {
+        String userLogged = getLoggedUser(request);
         List<Category> categories = categoriesRepository.findByNames(movieUpdateRequest.getCategories());
         List<String> categoriesThatNotExists = getCategoriesThatNotExists(categories, movieUpdateRequest.getCategories());
         Optional<Movie> movieOptional = movieRepository.findByName(movieName);
@@ -127,22 +125,19 @@ public class MovieServiceImpl implements MovieService {
                     errors,
                     Optional.empty());
         }
-        String token = request.getHeader("Authorization");
-        token = token.substring(7);
-
         Movie movie = movieOptional.get();
         MovieMapper.INSTANCE.updateMovieFromMovieUpdateRequest(
                 movieUpdateRequest,
                 movie,
                 categories,
                 new Date(System.currentTimeMillis()),
-                jwtService.extractUsername(token));
+                userLogged);
         movieRepository.save(movie);
 
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 movieUpdateRequest.getCategories(),
-                movie.getUserEntity().getEmail());
+                userLogged);
 
         return new ResponseBase<>(
                 "Movie updated successfully",
@@ -154,7 +149,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public ResponseBase<MovieResponse> deleteMovie(String movieName) {
-
+        String userLogged = getLoggedUser(request);
         Optional<Movie> movieOptional = movieRepository.findByName(movieName);
         if (movieOptional.isEmpty())
         {
@@ -164,11 +159,10 @@ public class MovieServiceImpl implements MovieService {
                     List.of("Movie not found"),
                     Optional.empty());
         }
-        String token = request.getHeader("Authorization").substring(7);
         Movie movie = movieOptional.get();
         movie.setDeleted(true);
         movie.setDeletedAt(new Date(System.currentTimeMillis()));
-        movie.setDeletedBy(jwtService.extractUsername(token));
+        movie.setDeletedBy(userLogged);
         MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
                 movie,
                 getCategoriesNames(movie),
@@ -183,7 +177,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Page<MovieResponse> searchMovies(String keyword, String categoryName, int releaseYear, Pageable pageable) {
+    public Page<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable) {
         Specification<Movie> specification = Specification
                 .where(MovieSpecification.hasCategory(keyword))
                 .or(MovieSpecification.hasCategory(categoryName))
@@ -222,15 +216,6 @@ public class MovieServiceImpl implements MovieService {
         }
         if (movieRequest.getCategories() == null || movieRequest.getCategories().isEmpty()) {
             errors.add("Categories are required");
-        }
-        return errors;
-    }
-    private List<String> validateInputCreate(MovieCreateRequest movieCreateRequest)
-    {
-        List<String> errors = validateInput(movieCreateRequest);
-
-        if (movieCreateRequest.getUserId() == 0) {
-            errors.add("User id is required");
         }
         return errors;
     }

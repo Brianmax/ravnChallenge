@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.ravn.moviescatalogchallenge.utils.Utils.getLoggedUser;
+
 @Service
 public class RateServiceImpl implements RateService {
     private final UserRepository userRepository;
@@ -35,7 +37,7 @@ public class RateServiceImpl implements RateService {
 
     @Override
     public ResponseBase<RateDto> rateMovie(RateDto rateDto) {
-        String userLogged = getLoggedUser();
+        String userLogged = getLoggedUser(request);
         List<String> errors = validateRate(rateDto);
         if (!errors.isEmpty()) {
             return new ResponseBase<>("Input validation failed", 400, errors, null);
@@ -71,14 +73,14 @@ public class RateServiceImpl implements RateService {
 
     @Override
     public List<RateDto> getMovieRates() {
-        String user = getLoggedUser();
+        String user = getLoggedUser(request);
         List<Rate> rates = rateRepository.findByUserEntityEmail(user);
         return rates.stream().map(RateMapper.INSTANCE::rateToRateDto).collect(Collectors.toList());
     }
 
     @Override
     public ResponseBase<Boolean> deleteRate(String movieName) {
-        String user = getLoggedUser();
+        String user = getLoggedUser(request);
         Optional<Rate> rate = rateRepository.findByMovieNameAndUserEntityEmail(movieName, user);
         if (rate.isEmpty()) {
             return new ResponseBase<>("Rate not found", 404, List.of("Rate not found"), Optional.of(false));
@@ -96,8 +98,5 @@ public class RateServiceImpl implements RateService {
             errors.add("Movie name must not be empty");
         }
         return errors;
-    }
-    private String getLoggedUser() {
-        return request.getUserPrincipal().getName();
     }
 }
