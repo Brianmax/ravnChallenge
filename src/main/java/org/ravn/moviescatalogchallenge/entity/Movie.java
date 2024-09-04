@@ -23,11 +23,8 @@ public class Movie {
     private Date createdAt;
     private Date updatedAt;
     private String updatedBy;
-    private boolean deleted;
-    private Date deletedAt;
-    private String deletedBy;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 

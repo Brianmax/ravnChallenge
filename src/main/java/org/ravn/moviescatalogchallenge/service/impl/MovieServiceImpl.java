@@ -158,7 +158,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public ResponseBase<MovieResponse> deleteMovie(String movieName) {
+    public ResponseBase<Boolean> deleteMovie(String movieName) {
         String userLogged = getLoggedUser(request);
         Optional<Movie> movieOptional = movieRepository.findByName(movieName);
         if (movieOptional.isEmpty())
@@ -167,23 +167,15 @@ public class MovieServiceImpl implements MovieService {
                     "Error deleting movie",
                     400,
                     List.of("Movie not found"),
-                    Optional.empty());
+                    Optional.of(false));
         }
-        Movie movie = movieOptional.get();
-        movie.setDeleted(true);
-        movie.setDeletedAt(new Date(System.currentTimeMillis()));
-        movie.setDeletedBy(userLogged);
-        MovieResponse movieResponse = MovieMapper.INSTANCE.movieToMovieResponse(
-                movie,
-                getCategoriesNames(movie),
-                movie.getUserEntity().getEmail(),
-                minioService.getPresignedUrl(movie.getPoster()));
-        movieRepository.save(movie);
+
+        movieRepository.delete(movieOptional.get());
         return new ResponseBase<>(
                 "Movie deleted successfully",
                 200,
                 List.of(),
-                Optional.of(movieResponse)
+                Optional.of(true)
         );
     }
 

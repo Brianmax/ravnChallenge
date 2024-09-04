@@ -24,9 +24,6 @@ CREATE TABLE movies (
                        created_at TIMESTAMP,
                        updated_at TIMESTAMP,
                        updated_by VARCHAR(255),
-                       deleted BOOLEAN DEFAULT FALSE,
-                       deleted_at TIMESTAMP,
-                       deleted_by VARCHAR(255),
                        user_id INT REFERENCES user_entity(user_id)
 );
 

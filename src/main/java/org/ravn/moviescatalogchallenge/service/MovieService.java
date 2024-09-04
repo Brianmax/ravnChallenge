@@ -12,7 +12,7 @@ public interface MovieService {
     ResponseBase<MovieResponse> createMovie(BaseMovieRequest movieCreateRequest);
     List<MovieResponse> getAllMovies(int page, int size);
     ResponseBase<MovieResponse> updateMovie(BaseMovieRequest movieUpdateRequest, String movieName);
-    ResponseBase<MovieResponse> deleteMovie(String movieName);
+    ResponseBase<Boolean> deleteMovie(String movieName);
     List<MovieResponse> searchMovies(String keyword, String categoryName, Integer releaseYear, Pageable pageable);
     ResponseBase<String> uploadImage(String movieName, MultipartFile file);
 }

@@ -23,9 +23,6 @@ public interface MovieMapper {
     @Mapping(target = "categories", source = "categories")
     @Mapping(target = "userEntity", source = "userEntity")
     @Mapping(target = "createdAt", source = "createdAt")
-    @Mapping(target = "deletedBy", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
-    @Mapping(target = "deleted", ignore = true)
     Movie movieRequestToMovie(
             BaseMovieRequest movieCreateRequest,
             List<Category> categories,

@@ -58,7 +58,7 @@ public class MovieController {
     }
 
     @DeleteMapping("/admin/delete")
-    public ResponseBase<MovieResponse> deleteMovie(@RequestParam String movieName) {
+    public ResponseBase<Boolean> deleteMovie(@RequestParam String movieName) {
         return movieService.deleteMovie(movieName);
     }
     @PostMapping("/admin/upload")
