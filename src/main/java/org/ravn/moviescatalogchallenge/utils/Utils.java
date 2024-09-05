@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class Utils {
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -34,5 +35,9 @@ public class Utils {
             logger.error(errorMessage, e);
             throw new JsonConversionException(errorMessage, e);
         }
+    }
+
+    public static boolean isValidEmail(String email) {
+        return StringUtils.hasText(email) && email.matches("^(.+)@(.+)$");
     }
 }

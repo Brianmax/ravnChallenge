@@ -1,5 +1,6 @@
 package org.ravn.moviescatalogchallenge.service.impl;
 
+import jdk.jshell.execution.Util;
 import org.ravn.moviescatalogchallenge.aggregate.request.LoginRequest;
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequest;
 import org.ravn.moviescatalogchallenge.aggregate.request.UserRequestUpdate;
@@ -22,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +51,6 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> userOptional = userRepository.findByEmail(userRequest.getEmail());
         Optional<Role> roleOptional = roleRepository.findByRole(userRequest.getRole());
         List<String> errors = validateInput(userRequest);
-        // if the user already exist, or the role does not exist. We do nothing
         if (userOptional.isPresent()) {
             errors.add("User already exists");
         }
@@ -126,6 +127,12 @@ public class UserServiceImpl implements UserService {
         if (userRequest.getEmail() == null || userRequest.getEmail().isEmpty()) {
             errors.add("Email is required");
         }
+        // verify if email is valid
+
+        if (!Utils.isValidEmail(userRequest.getEmail())) {
+            errors.add("Invalid email");
+        }
+
         if (userRequest.getPassword() == null || userRequest.getPassword().isEmpty()) {
             errors.add("Password is required");
         }
