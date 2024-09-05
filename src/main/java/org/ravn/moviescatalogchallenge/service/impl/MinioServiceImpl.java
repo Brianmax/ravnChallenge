@@ -3,6 +3,7 @@ package org.ravn.moviescatalogchallenge.service.impl;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import io.minio.http.Method;
 import org.ravn.moviescatalogchallenge.service.MinioService;
 import org.slf4j.Logger;
@@ -66,6 +67,22 @@ public class MinioServiceImpl implements MinioService {
             errorMessage = "Error getting presigned url " + e.getMessage();
             logger.error(errorMessage);
             return errorMessage;
+        }
+    }
+
+    @Override
+    public boolean deleteImage(String objectName) {
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket("movies")
+                            .object(objectName)
+                            .build());
+            return true;
+        } catch (Exception e) {
+            String errorMessage = "Error deleting image " + e.getMessage();
+            logger.error(errorMessage);
+            return false;
         }
     }
 }

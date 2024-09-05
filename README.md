@@ -25,6 +25,19 @@ docker-compose -f docker-compose.dev.yml up -d
 ravnChallenge/postman/MoviesCatalogChallenge.postman_collection.json
 ```
 
+# Endpoints
+
+Information about the endpoints can be found in the postman collection.
+
+# Posters for the movies
+
+The posters for the movies are stored in minio, you can access the minio web interface using the following credentials:
+
+- Access Key: minio
+- Secret Key: minio123
+- URL: http://localhost:9000
+- Bucket: movies
+
 # Database
 
 The database is populated with the following data:
@@ -40,7 +53,7 @@ The database is populated with the following data:
     {
         "email": "user@example.com",
         "password": "password",
-        "role": "USER",
+        "role": "USER"
     }
 ]
 ```

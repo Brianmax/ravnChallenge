@@ -159,7 +159,6 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public ResponseBase<Boolean> deleteMovie(String movieName) {
-        String userLogged = getLoggedUser(request);
         Optional<Movie> movieOptional = movieRepository.findByName(movieName);
         if (movieOptional.isEmpty())
         {
@@ -171,6 +170,9 @@ public class MovieServiceImpl implements MovieService {
         }
 
         movieRepository.delete(movieOptional.get());
+        if (movieOptional.get().getPoster() != null) {
+            minioService.deleteImage(movieOptional.get().getPoster());
+        }
         return new ResponseBase<>(
                 "Movie deleted successfully",
                 200,
@@ -218,9 +220,11 @@ public class MovieServiceImpl implements MovieService {
         if (imageName == null) {
             errors.add("Error uploading image");
         }
-
         if (movieOptional.isPresent() && imageName != null) {
             Movie movie = movieOptional.get();
+            if (movie.getPoster() != null) {
+                minioService.deleteImage(movie.getPoster());
+            }
             movie.setPoster(imageName);
             movieRepository.save(movie);
             return new ResponseBase<>(
