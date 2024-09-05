@@ -1,28 +1,28 @@
 CREATE TABLE role (
                       role_id SERIAL PRIMARY KEY,
-                      role VARCHAR(255) NOT NULL
+                      role VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE category (
                           category_id SERIAL PRIMARY KEY,
-                          name VARCHAR(255) NOT NULL
+                          name VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE user_entity (
                              user_id SERIAL PRIMARY KEY,
-                             email VARCHAR(255) NOT NULL,
+                             email VARCHAR(255) NOT NULL UNIQUE,
                              password VARCHAR(255) NOT NULL,
                              role_id INT REFERENCES role(role_id)
 );
 
 CREATE TABLE movies (
                        movie_id SERIAL PRIMARY KEY,
-                       name VARCHAR(255) NOT NULL,
+                       name VARCHAR(255) NOT NULL UNIQUE,
                        release_year INT NOT NULL,
                        synopsis TEXT,
                        poster VARCHAR(255),
-                       created_at TIMESTAMP,
-                       updated_at TIMESTAMP,
+                       created_at DATE,
+                       updated_at DATE,
                        updated_by VARCHAR(255),
                        user_id INT REFERENCES user_entity(user_id)
 );
