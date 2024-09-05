@@ -39,6 +39,8 @@ The posters for the movies are stored in minio, you can access the minio web int
 - URL: http://localhost:9000
 - Bucket: movies
 
+You can upload posters multiple times, the last upload will overwrite the previous one.
+
 # Cache
 
 The cache feature is implemented using Redis. The time to live for the cache is 5 minutes.

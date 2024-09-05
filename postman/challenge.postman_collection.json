@@ -226,7 +226,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTQ5Nzk4NCwiZXhwIjoxNzI1NDk5MTg0fQ.lyzioHIfMZ1zfypSSjmX_Mwn99Xh1VEE_qYcvOwfhg8",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTUxMTIzNywiZXhwIjoxNzI1NTExODM3fQ.kwTgco4bw-sfk6Tgnc4DYUOW68N7d5xloJeMJEaK0U4",
 											"type": "string"
 										}
 									]
@@ -278,7 +278,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJtYXhpQGdtYWlsLmNvbSIsImlhdCI6MTcyNTM5MzQzOSwiZXhwIjoxNzI1MzkzNTU5fQ.50fudZOzN9bh0L4DVir0qofteCI9c7AR1w-b78ivAL0",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTUxMTIzNywiZXhwIjoxNzI1NTExODM3fQ.kwTgco4bw-sfk6Tgnc4DYUOW68N7d5xloJeMJEaK0U4",
 											"type": "string"
 										}
 									]
@@ -295,7 +295,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://127.0.0.1:8080/api/v1/movie/admin/delete?movieName=Jhon Wick Parabellum",
+									"raw": "http://127.0.0.1:8080/api/v1/movie/admin/delete?movieName=It 2",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -314,7 +314,7 @@
 									"query": [
 										{
 											"key": "movieName",
-											"value": "Jhon Wick Parabellum"
+											"value": "It 2"
 										}
 									]
 								},
@@ -330,7 +330,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTQ5OTEwNSwiZXhwIjoxNzI1NTAwMzA1fQ.DTghg9jd3KgwjPMTV-mYCzuYqC2diNmAMJekAkK0Tc0",
+											"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTUxMTM3MywiZXhwIjoxNzI1NTExOTczfQ.5TGPUfcyi4FXj8nmMTWsgo2PlblSbSB3MRk9-2fz3Cc",
 											"type": "string"
 										}
 									]
@@ -343,7 +343,7 @@
 										{
 											"key": "file",
 											"type": "file",
-											"src": "/Users/george/Downloads/it.jpg"
+											"src": "/Users/george/Downloads/it-poster.jpg"
 										},
 										{
 											"key": "movieName",
@@ -354,7 +354,7 @@
 									]
 								},
 								"url": {
-									"raw": "http://127.0.0.1:8080/api/v1/movie/admin/upload?movieName=The Dark Knit",
+									"raw": "http://127.0.0.1:8080/api/v1/movie/admin/upload?movieName=Inception",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -373,7 +373,7 @@
 									"query": [
 										{
 											"key": "movieName",
-											"value": "The Dark Knit"
+											"value": "Inception"
 										}
 									]
 								},
@@ -395,7 +395,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTQ5NzEwNywiZXhwIjoxNzI1NDk4MzA3fQ.mavApn9udEpTlYUh01012iaaj8DveS7OINPDRJ0Cksc",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTUxMTM3MywiZXhwIjoxNzI1NTExOTczfQ.5TGPUfcyi4FXj8nmMTWsgo2PlblSbSB3MRk9-2fz3Cc",
 									"type": "string"
 								}
 							]
@@ -468,7 +468,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTUwMjI1NywiZXhwIjoxNzI1NTAzNDU3fQ.FujTHGFU_VS4b6b2wgDKm9ehAdzi8E-2mZdLdOuOgdo",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTUxMTM3MywiZXhwIjoxNzI1NTExOTczfQ.5TGPUfcyi4FXj8nmMTWsgo2PlblSbSB3MRk9-2fz3Cc",
 									"type": "string"
 								}
 							]
@@ -510,7 +510,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MjU0ODk3MjQsImV4cCI6MTcyNTQ5MDkyNH0.u0tOxC19VYvAcBsvS03cCSB0nf_VWB_drQiMzJcidzY",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTUxMTM3MywiZXhwIjoxNzI1NTExOTczfQ.5TGPUfcyi4FXj8nmMTWsgo2PlblSbSB3MRk9-2fz3Cc",
 									"type": "string"
 								}
 							]
@@ -543,7 +543,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTQ5MzcwNCwiZXhwIjoxNzI1NDk0OTA0fQ.ZP9-Lzt4D_2B_YXe24SZfK1cfy10cq8bD7Pp-ogdGqE",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTcyNTUxMTM3MywiZXhwIjoxNzI1NTExOTczfQ.5TGPUfcyi4FXj8nmMTWsgo2PlblSbSB3MRk9-2fz3Cc",
 									"type": "string"
 								}
 							]
