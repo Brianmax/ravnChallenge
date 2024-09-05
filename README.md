@@ -56,6 +56,11 @@ If the token expires, the server will return the following response:
 }
 ```
 
+# Swagger
+
+The swagger documentation can be found in the following URL:
+[http://localhost:8080/swagger-ui/index.html#/](http://localhost:8080/swagger-ui/index.html#/)
+
 # Database
 
 The database is populated with the following data:
