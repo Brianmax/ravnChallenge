@@ -171,11 +171,10 @@ public class MovieServiceImpl implements MovieService {
                     List.of("Movie not found"),
                     Optional.of(false));
         }
-
-        movieRepository.delete(movieOptional.get());
         if (movieOptional.get().getPoster() != null) {
             minioService.deleteImage(movieOptional.get().getPoster());
         }
+        movieRepository.delete(movieOptional.get());
         return new ResponseBase<>(
                 "Movie deleted successfully",
                 200,
