@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ravn.moviescatalogchallenge.aggregate.request.BaseMovieRequest;
 import org.ravn.moviescatalogchallenge.aggregate.response.MovieResponse;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/movie")
+@Tag(name = "Movie", description = "Movie management, create, update, delete and search movies")
 public class MovieController {
     private final MovieService movieService;
 

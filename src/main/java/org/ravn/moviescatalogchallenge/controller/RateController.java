@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ravn.moviescatalogchallenge.aggregate.request.RateDto;
 import org.ravn.moviescatalogchallenge.aggregate.response.ResponseBase;
 import org.ravn.moviescatalogchallenge.service.RateService;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/rate")
+@Tag(name = "Rate", description = "Rate a movie, get movie rates and delete a movie rate")
 public class RateController {
     private final RateService rateService;
 
