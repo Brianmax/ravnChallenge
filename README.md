@@ -38,6 +38,21 @@ The posters for the movies are stored in minio, you can access the minio web int
 - URL: http://localhost:9000
 - Bucket: movies
 
+# Cache
+
+The cache feature is implemented using Redis. The time to live for the cache is 5 minutes.
+
+# Authentication
+
+The authentication is implemented using JWT. The token is valid for 10 minutes. The token is sent in the Authorization header.
+If the token expires, the server will return the following response:
+    
+```json
+{
+    "message": "Token expired"
+}
+```
+
 # Database
 
 The database is populated with the following data:

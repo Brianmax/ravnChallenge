@@ -18,6 +18,7 @@ import org.ravn.moviescatalogchallenge.repository.UserRepository;
 import org.ravn.moviescatalogchallenge.repository.specification.MovieSpecification;
 import org.ravn.moviescatalogchallenge.service.MinioService;
 import org.ravn.moviescatalogchallenge.service.MovieService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,6 +40,8 @@ public class MovieServiceImpl implements MovieService {
     private final HttpServletRequest request;
     private final RedisService redisService;
     private final MinioService minioService;
+    @Value("${time.redis}")
+    private int EXPIRATION_TIME;
 
     public MovieServiceImpl(MovieRepository movieRepository, CategoriesRepository categoriesRepository, UserRepository userRepository, HttpServletRequest request, RedisService redisService, MinioService minioService) {
         this.movieRepository = movieRepository;
@@ -205,7 +208,7 @@ public class MovieServiceImpl implements MovieService {
                         minioService.getPresignedUrl(movie.getPoster())))
                 .collect(Collectors.toList());
         String redisData = convertToJson(movieResponses);
-        redisService.saveKeyValue(key, redisData, 5);
+        redisService.saveKeyValue(key, redisData, EXPIRATION_TIME);
         return movieResponses;
     }
 
