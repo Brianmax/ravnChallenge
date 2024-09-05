@@ -27,7 +27,8 @@ ravnChallenge/postman/MoviesCatalogChallenge.postman_collection.json
 
 # Endpoints
 
-Information about the endpoints can be found in the postman collection.
+Information about the endpoints can be found in the postman collection. Click on `View complete documentation`.
+![img.png](img.png)
 
 # Posters for the movies
 
